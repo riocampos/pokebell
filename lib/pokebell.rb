@@ -9,6 +9,7 @@ class Pokebell
   end
   
   attr_reader :pokebell, :str
+  alias :code :pokebell
   alias :to_a :str
   
   private
@@ -97,6 +98,7 @@ class Pokebell
   
   def encode(code)
     code2pokebell_hash = {
+      166 => "02", # を
       63 => "67", # ？
       33 => "68", # ！
       45 => "69", # −
