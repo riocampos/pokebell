@@ -44,7 +44,10 @@ Pokebell.new("６７８９０").pokebell #=> "0607080900"
 
 ```
 Pokebell.new("ぱーる").pokebell #=> "61056993"
+Pokebell.new("パール").pokebell #=> "61056993"
 Pokebell.new("るびー").pokebell #=> "93620469"
+Pokebell.new("ルビー").pokebell #=> "93620469"
+
 Pokebell.new("perl").pokebell   #=> "46104837"
 Pokebell.new("ruby").pokebell   #=> "48561750"
 Pokebell.new("hello pokebell").pokebell
