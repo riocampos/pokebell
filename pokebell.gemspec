@@ -14,16 +14,17 @@ Gem::Specification.new do |s|
   s.email = "riocampos22@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
     ".rspec",
     "Gemfile",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
     "VERSION",
     "lib/pokebell.rb",
+    "pokebell.gemspec",
     "spec/pokebell_spec.rb",
     "spec/spec_helper.rb"
   ]
