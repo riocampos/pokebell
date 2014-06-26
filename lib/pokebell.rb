@@ -9,6 +9,7 @@ class Pokebell
   end
   
   attr_reader :pokebell, :str
+  alias :to_a :str
   
   private
   def zenkaku2hankaku(str)
