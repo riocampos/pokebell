@@ -3,13 +3,22 @@
 require 'nkf'
 
 class Pokebell
+  # Set message and make Pokebell codes.
+  # @param str [String] message (contains Hiragana / Katakana / alphabet / digit)
+  # @return [Pokebell]
   def initialize(str)
     @str = str.gsub(/\\/, "")
     @pokebell = pick_hankaku_code(zenkaku2hankaku(@str)).map{ |code| encode(code) }.join
   end
   
-  attr_reader :pokebell, :str
+  # @!method pokebell
+  # @return [String] Pokebell codes (2-digit string)
+  attr_reader :pokebell
   alias :code :pokebell
+  
+  # @!method str
+  # @return [String] original message
+  attr_reader :str
   alias :to_a :str
   
   private
