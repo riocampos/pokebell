@@ -56,6 +56,7 @@ Pokebell.new("hello pokebell").pokebell
 
 ##TODO
 
+* RSpec
 * Emoji (Clock="78", Phone="79", Cup="70", Heart="89")
 * Convert (Decode) from codes to Japanese charactors
 
