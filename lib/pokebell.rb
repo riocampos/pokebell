@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 # coding: utf-8
+
+require 'moji'
+
 require 'nkf'
 
 class Pokebell
@@ -7,23 +10,82 @@ class Pokebell
   # @param str [String] message (contains Hiragana / Katakana / alphabet / digit)
   # @return [Pokebell]
   def initialize(str)
-    @str = str.gsub(/\\/, "")
+    @str = Moji.han_to_zen(hiragana2katakana(str.upcase.gsub(/\\/, "")))
     @pokebell = pick_hankaku_code(zenkaku2hankaku(@str)).map{ |code| encode(code) }.join
+  end
+  
+  # Set Pokebell code and make message string.
+  # @param num [String] Pokebell code (length must be even)
+  # @raise [ArgumentError] if param does not makes digit or its length is not even
+  # @return [Pokebell]
+  # @since 0.1.0
+  def self.number(num)
+    num_str = num.to_s
+    unless num_str == num_str[/(\d\d)+/]
+      raise ArgumentError, "wrong digit length (must be even digits)"
+    end
+    two_digits_array = num_str.scan(/\d\d/)
+    str_array_with_daku_handaku = make_str_array(two_digits_array)
+    str_array = []
+    loop do
+      follow_char = nil
+      char = str_array_with_daku_handaku.shift
+      break unless char
+      follow_char_test = str_array_with_daku_handaku.first
+      unless follow_char_test
+        str_array << char
+        break
+      end
+      if follow_char_test[/[゛゜]/]
+        follow_char = str_array_with_daku_handaku.shift 
+        char = merge_daku_handaku(char, follow_char)
+      end
+      str_array << char
+    end
+    str = str_array.join
+    Pokebell.new(str)
+  end
+  
+  # @return [String] 
+  # @since 0.1.0
+  def inspect
+    %[#<str="#{@str}", pokebell="#{@pokebell}">]
   end
   
   # @!method pokebell
   # @return [String] Pokebell codes (2-digit string)
   attr_reader :pokebell
   alias :code :pokebell
+  alias :num :pokebell
   
   # @!method str
-  # @return [String] original message
+  # @return [String] message (convert to Zenkaku charactors, especially from Hiragana to Katakana)
   attr_reader :str
-  alias :to_a :str
+  alias :to_s :str
+  alias :text :str
   
   private
+  TABLE = [
+    %w[０ ワ ヲ ン ゛ ゜ ６ ７ ８ ９], 
+    %w[Ｅ ア イ ウ エ オ Ａ Ｂ Ｃ Ｄ], 
+    %w[Ｊ カ キ ク ケ コ Ｆ Ｇ Ｈ Ｉ], 
+    %w[Ｏ サ シ ス セ ソ Ｋ Ｌ Ｍ Ｎ], 
+    %w[Ｔ タ チ ツ テ ト Ｐ Ｑ Ｒ Ｓ], 
+    %w[Ｙ ナ ニ ヌ ネ ノ Ｕ Ｖ Ｗ Ｘ], 
+    %w[／ ハ ヒ フ ヘ ホ Ｚ ？ ！ ー], 
+    ([""] + %w[マ ミ ム メ モ ￥ ＆] + ["", ""]), 
+    ([""] + %w[ヤ （ ユ ） ヨ ＊ ＃ 　] + [""]), 
+    %w[５ ラ リ ル レ ロ １ ２ ３ ４], 
+  ]
+  DAKU_BASE_REGEX = /[カキクケコサシスセソタチツテト]/
+  DAKU_HANDAKU_BASE_REGEX = /[ハヒフヘホ]/
+  
   def zenkaku2hankaku(str)
-    NKF.nkf('-j -Z4', NKF.nkf('-w -h2', str))
+    NKF.nkf('-jZ4', str)
+  end
+  
+  def hiragana2katakana(str)
+    NKF.nkf("-wh2", str).gsub("¥", "￥")
   end
   
   def escape_char?(char)
@@ -53,6 +115,8 @@ class Pokebell
       else
         raise "out of aiming JIS charactor area"
       end
+    elsif char.unpack("C") == "\x21".unpack("C")
+      
     else
       raise "out of aiming JIS charactor area"
     end
@@ -155,6 +219,26 @@ class Pokebell
       code2pokebell_hash[code]
     else
       raise "out of aiming charactor area"
+    end
+  end
+  
+  def self.make_str_array(array) 
+    array.map { |digits|
+      i = digits[0].to_i
+      j = digits[1].to_i
+      TABLE[i][j]
+    }
+  end
+  
+  def self.merge_daku_handaku(char, follow_char)
+    if follow_char[/゛/] && char[Regexp.union(DAKU_BASE_REGEX, DAKU_HANDAKU_BASE_REGEX)]
+      [char.unpack("U*").first + 1].pack("U")
+    elsif follow_char[/゜/] && char[DAKU_HANDAKU_BASE_REGEX]
+      [char.unpack("U*").first + 2].pack("U")
+    elsif follow_char[/゛/] && char[/ウ/]
+      "ヴ"
+    else
+      char + follow_char
     end
   end
 end
