@@ -1,6 +1,6 @@
 # pokebell
 
-This gem is convert from Japanese message written by Hiragana / Katakana / alphabet / digit to Japanese pager aka "Pokebell" 2-digits format codes.
+This gem is convert from Japanese message written by Hiragana / Katakana / alphabet / digit to Japanese pager aka "Pokebell" 2-digits format codes, and from the code to Katakana message.
 
 ## usage
 
@@ -8,8 +8,15 @@ This gem is convert from Japanese message written by Hiragana / Katakana / alpha
 pokeberu = Pokebell.new("ぽけべる")
 pokeberu.pokebell #=> "650524640493"
 pokeberu.code     #=> "650524640493"
-pokeberu.str      #=> "ぽけべる"
-pokeberu.to_a     #=> "ぽけべる"
+pokeberu.str      #=> "ポケベル"
+pokeberu.to_s     #=> "ポケベル"
+```
+```
+pokeberu = Pokebell.number("650524640493")
+pokeberu.pokebell #=> "650524640493"
+pokeberu.code     #=> "650524640493"
+pokeberu.str      #=> "ポケベル"
+pokeberu.to_s     #=> "ポケベル"
 ```
 
 ## convert table
@@ -53,12 +60,18 @@ Pokebell.new("ruby").pokebell   #=> "48561750"
 Pokebell.new("hello pokebell").pokebell
 #=> "2810373730884630361017103737"
 ```
-
+```
+Pokebell.number("61056993").str #=> "パール"
+Pokebell.number("93620469").str #=> "ルビー"
+Pokebell.number("46104837").str #=> "ＰＥＲＬ"
+Pokebell.number("48561750").str #=> "ＲＵＢＹ"
+Pokebell.number("2810373730884630361017103737").str
+#=> "ＨＥＬＬＯ　ＰＯＫＥＢＥＬＬ"
+```
 ##TODO
 
 * RSpec
 * Emoji (Clock="78", Phone="79", Cup="70", Heart="89")
-* Convert (Decode) from codes to Japanese charactors
 
 ## Contributing to pokebell
  
